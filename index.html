@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mome</title>
+  </head>
+  <body>
+    <form id="controller">
+      <label>
+        메모 내용 :
+        <input id="textInput" name="memoText" type="text" />
+      </label>
+      <br />
+      <label>
+        링크 :
+        <input name="memoLink" type="url" />
+      </label>
+      <br />
+      <label>
+        배경 색상 :
+        <input id="colorInput" name="memoBgColor" type="color" />
+      </label>
+      <button>추가</button>
+    </form>
+
+    <section id="view"></section>
+
+    <script>
+      async function onload() {
+        async function useGemini() {
+          const url = `https://locrian-distinct-okra.glitch.me/`;
+
+          const response = await fetch(url);
+
+          return await response.text();
+        }
+
+        document.querySelector("#textInput").value = await useGemini();
+
+        function rdColor() {
+          return `#${[...Array(3)]
+            .map(() => Math.floor(Math.random() * 56) + 200)
+            .map((v) => v.toString(16).padStart(2, "0"))
+            .join("")}`;
+        }
+        document.querySelector("#colorInput").value = rdColor();
+
+        const memoData = [
+          ...(JSON.parse(localSaveButton.getItem("memoStorage")) ?? []),
+          ...(JSON.parse(sessionStorage.getItem("memoStorage")) ?? []),
+        ];
+
+        function drawMemo() {
+          const view = document.querySelector("#view");
+          view.innerHTML = "";
+          for (const memo of memoData) {
+            const memoElement = document.createElement("div");
+            memoElement.style.backgroundColor = memo.bgColor;
+            view.appendChild(memoElement);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "삭제";
+            deleteButton.addEventListener("click", () => {
+              memoElement.remove();
+            });
+            memoElement.appendChild(deleteButton);
+
+            const localSaveButton = document.createElement("button");
+            localSaveButton.textContent = "로컬 저장 버튼";
+            localSaveButton.addEventListener("click", () => {
+              localSaveButton.setItem(
+                "memoStorage",
+                JSON.stringify([
+                  ...(JSON.parse(localSaveButton.getItem("memoStorage")) ?? []),
+                  memo,
+                ])
+              );
+            });
+
+            memoElement.appendChild(localSaveButton);
+
+            const sessionSaveStorage = document.createElement("button");
+            sessionSaveStorage.textContent = "세션 저장 버튼";
+            sessionSaveStorage.addEventListener("click", () => {
+              sessionSaveStorage.setItem(
+                "memoStorage",
+                JSON.stringify([
+                  ...(JSON.parse(sessionSaveStorage.getItem("memoStorage")) ??
+                    []),
+                  memo,
+                ])
+              );
+            });
+
+            memoElement.appendChild(sessionSaveStorage);
+
+            const localDeleteButton = document.createElement("button");
+            localDeleteButton.textContent = "로컬 삭제";
+            localDeleteButton.addEventListener("click", () => {
+              let existingData =
+                JSON.parse(localStorage.getItem("memoStorage")) || [];
+              existingData = existingData.filter((m) => m.text !== memo.text);
+              localStorage.setItem("memoStorage", JSON.stringify(existingData));
+              drawMemo();
+            });
+
+            memoElement.appendChild(localDeleteButton);
+
+            const sessionDeleteButton = document.createElement("button");
+            sessionDeleteButton.textContent = "세션 삭제";
+            sessionDeleteButton.addEventListener("click", () => {
+              let existingData =
+                JSON.parse(sessionStorage.getItem("memoStorage")) || [];
+              existingData = existingData.filter((m) => m.text !== memo.text);
+              sessionStorage.setItem(
+                "memoStorage",
+                JSON.stringify(existingData)
+              );
+              drawMemo();
+            });
+
+            memoElement.appendChild(sessionDeleteButton);
+
+            if (memo.link) {
+              const nowLinkButton = document.createElement("button");
+              const newLinkButton = document.createElement("button");
+
+              nowLinkButton.textContent = "현재 창 열기";
+              newLinkButton.textContent = "새 창 열기";
+
+              memoElement.appendChild(nowLinkButton);
+              memoElement.appendChild(newLinkButton);
+
+              nowLinkButton.addEventListener(
+                "click",
+                () => (location.href = memo.url)
+              );
+
+              newLinkButton.addEventListener("click", () =>
+                window.open(memo.url)
+              );
+            }
+          }
+        }
+
+        const controller = document.querySelector("#controller");
+        controller.addEventListener("submit", function (event) {
+          event.preventDefault();
+          const form = new FormData(controller);
+          const memo = {};
+          memo.text = form.get("memoText");
+          memo.bgColor = form.get("memoBgColor");
+          memo.link = form.get("memoLink");
+          memoData.push(memo);
+
+          drawMemo();
+        });
+
+        drawMemo();
+      }
+
+      onload();
+    </script>
+  </body>
+</html>
