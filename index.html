@@ -4,6 +4,81 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mome</title>
+    <style>
+      body {
+        background-color: #fcf6f5;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+      }
+
+      form {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 20px;
+      }
+
+      label {
+        font-size: 14px;
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+        text-align: left;
+      }
+
+      input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      button {
+        background-color: #7b9acc;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin: 10px 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background-color: #5f7cb8;
+      }
+
+      #view {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .memo {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        min-width: 250px;
+        max-width: 300px;
+        text-align: left;
+      }
+
+      .memo button {
+        display: inline-block;
+        width: 48%;
+        font-size: 12px;
+      }
+    </style>
   </head>
   <body>
     <form id="controller">
